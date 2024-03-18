@@ -1,34 +1,41 @@
-﻿using IncomeTaxCalculator.Domain.DomainModels;
+﻿using AutoMapper;
+using IncomeTaxCalculator.Domain.DomainModels;
 using IncomeTaxCalculator.Persistence.Repositories.Interfaces;
 
 namespace IncomeTaxCalculator.Domain.Services;
 
 public class TaxBandService : ITaxBandService
 {
-    public TaxBandService(ITaxBandRepository taxBandRepository)
+    private readonly IMapper _mapper;
+    private readonly ITaxBandRepository _taxBandRepository;
+
+    public TaxBandService(
+        IMapper mapper, 
+        ITaxBandRepository taxBandRepository)
     {
-        TaxBandRepository = taxBandRepository;
+        _mapper = mapper;
+        _taxBandRepository = taxBandRepository;
     }
 
-    public ITaxBandRepository TaxBandRepository { get; }
+    public async Task<decimal> CalculateTotalBandTaxAsync(decimal grossAnnualSalary)
+    {
+        var taxBands = await _taxBandRepository.GetAllAsync();
 
-    public decimal CalculateTotalBandTax(decimal grossAnnualSalary)
+        var taxBandDomainModels = _mapper.Map<IEnumerable<TaxBandDomainModel>>(taxBands);
+
+        return taxBandDomainModels.Sum(taxBand => CalculateBandTax(taxBand, grossAnnualSalary));
+    }
+
+    private static decimal CalculateBandTax(TaxBandDomainModel taxBand, decimal grossAnnualSalary)
     {
         return CalculateSalaryWithinTaxBand(taxBand, grossAnnualSalary) * taxBand.TaxRate / 100;
     }
 
-    private decimal CalculateBandTax(TaxBandDomainModel taxBand, decimal grossAnnualSalary)
+    private static decimal CalculateSalaryWithinTaxBand(TaxBandDomainModel taxBand, decimal grossAnnualSalary)
     {
-        return CalculateSalaryWithinTaxBand(taxBand, grossAnnualSalary) * taxBand.TaxRate / 100;
-    }
+        if (taxBand.AnnualSalaryUpperLimit.HasValue && taxBand.AnnualSalaryUpperLimit.Value < grossAnnualSalary)
+            return taxBand.AnnualSalaryUpperLimit.Value - taxBand.AnnualSalaryLowerLimit;
 
-    private decimal CalculateSalaryWithinTaxBand(TaxBandDomainModel taxBand, decimal grossAnnualSalary)
-    {
-        if (!taxBand.AnnualSalaryUpperLimit.HasValue)
-            return grossAnnualSalary - taxBand.AnnualSalaryLowerLimit;
-
-        var taxBandRange = taxBand.AnnualSalaryUpperLimit.Value - taxBand.AnnualSalaryLowerLimit;
-
-        return grossAnnualSalary - taxBandRange;
+        return grossAnnualSalary - taxBand.AnnualSalaryLowerLimit;
     }
 }

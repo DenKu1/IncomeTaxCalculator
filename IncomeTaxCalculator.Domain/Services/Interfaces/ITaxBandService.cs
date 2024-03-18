@@ -1,8 +1,6 @@
-﻿using IncomeTaxCalculator.Domain.DomainModels;
-
-namespace IncomeTaxCalculator.Domain.Services;
+﻿namespace IncomeTaxCalculator.Domain.Services;
 
 public interface ITaxBandService
 {
-    public decimal CalculateBandTax(TaxBandDomainModel taxBand, decimal grossAnnualSalary);
+    Task<decimal> CalculateTotalBandTaxAsync(decimal grossAnnualSalary);
 }

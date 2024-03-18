@@ -1,5 +1,4 @@
 ﻿using IncomeTaxCalculator.API.ViewModels.Responses;
-using IncomeTaxCalculator.Domain.DomainModels;
 using IncomeTaxCalculator.Domain.Services.Interfaces;
 
 namespace IncomeTaxCalculator.Domain.Services;
@@ -14,9 +13,9 @@ public class IncomeTaxService : IIncomeTaxService
         _taxBandService = taxBandService;
     }
 
-    public CalculateTaxResultDomainModel CalculateIncomeTax(decimal grossAnnualSalary)
+    public async Task<CalculateTaxResultDomainModel> CalculateIncomeTaxAsync(decimal grossAnnualSalary)
     {
-        var totalAnnualTaxPaid = CalculateTotalAnnualTaxPaid(taxBands, grossAnnualSalary);
+        var totalAnnualTaxPaid = await _taxBandService.CalculateTotalBandTaxAsync(grossAnnualSalary);
         var netAnnualSalary = CalculateNetAnnualSalary(grossAnnualSalary, totalAnnualTaxPaid);
 
         return new CalculateTaxResultDomainModel
@@ -33,10 +32,5 @@ public class IncomeTaxService : IIncomeTaxService
     private decimal CalculateNetAnnualSalary(decimal grossAnnualSalary, decimal totalAnnualTaxPaid)
     {
         return grossAnnualSalary - totalAnnualTaxPaid;
-    }
-
-    private decimal CalculateTotalAnnualTaxPaid(IEnumerable<TaxBandDomainModel> taxBands, decimal grossAnnualSalary)
-    {
-        return taxBands.Sum(taxBand => _taxBandService.CalculateBandTax(taxBand, grossAnnualSalary));
     }
 }

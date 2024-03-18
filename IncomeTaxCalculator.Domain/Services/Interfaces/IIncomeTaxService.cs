@@ -4,5 +4,5 @@ namespace IncomeTaxCalculator.Domain.Services.Interfaces;
 
 public interface IIncomeTaxService
 {
-    public CalculateTaxResultDomainModel CalculateIncomeTax(decimal grossAnnualSalary);
+    Task<CalculateTaxResultDomainModel> CalculateIncomeTaxAsync(decimal grossAnnualSalary);
 }
