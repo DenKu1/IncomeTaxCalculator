@@ -1,23 +1,43 @@
+using IncomeTaxCalculator.API.Startup;
+using IncomeTaxCalculator.Persistence.EF;
+using Microsoft.EntityFrameworkCore;
+using System.Reflection;
+
 var builder = WebApplication.CreateBuilder(args);
+var assembly = Assembly.GetExecutingAssembly();
 
-// Add services to the container.
+builder.Services.AddDbContext<IncomeTaxDbContext>(option =>
+{
+    option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
 
+builder.Services.AddCors();
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.RegisterMapper(assembly);
+builder.RegisterDependencies();
+builder.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.RegisterMiddleware();
 
-app.UseAuthorization();
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    if (!app.Environment.IsDevelopment())
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Income Tax API");
+        //c.RoutePrefix = "/";
+    }
+});
+
+app.UseCors();
+
+app.UseHttpsRedirection();
 
 app.MapControllers();
+app.ApplyMigration<IncomeTaxDbContext>();
 
 app.Run();
