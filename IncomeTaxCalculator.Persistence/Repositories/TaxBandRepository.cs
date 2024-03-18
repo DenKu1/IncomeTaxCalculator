@@ -1,4 +1,5 @@
-﻿using IncomeTaxCalculator.Persistence.Entities;
+﻿using IncomeTaxCalculator.Persistence.EF;
+using IncomeTaxCalculator.Persistence.Entities;
 using IncomeTaxCalculator.Persistence.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,9 +7,9 @@ namespace IncomeTaxCalculator.Persistence.Repositories
 {
     public class TaxBandRepository : ITaxBandRepository
     {
-        private readonly DbContext _context;
+        private readonly IncomeTaxDbContext _context;
 
-        public TaxBandRepository(DbContext context)
+        public TaxBandRepository(IncomeTaxDbContext context)
         {
             _context = context;
         }
