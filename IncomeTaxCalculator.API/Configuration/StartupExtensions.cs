@@ -15,7 +15,7 @@ public static class StartupExtensions
 {
     public static void RegisterMapper(this WebApplicationBuilder builder)
     {
-        builder.Services.AddAutoMapper(typeof(IncomeTaxProfile), typeof(TaxBandProfile));
+        builder.Services.AddAutoMapper(typeof(IncomeTaxProfile), typeof(TaxBandDomainModelProfile));
     }
 
     public static void AddSwaggerGen(this WebApplicationBuilder builder)

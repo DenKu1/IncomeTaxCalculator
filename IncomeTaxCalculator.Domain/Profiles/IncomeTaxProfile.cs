@@ -4,9 +4,9 @@ using IncomeTaxCalculator.Persistence.Entities;
 
 namespace IncomeTaxCalculator.Domain.Profiles;
 
-public class TaxBandProfile : Profile
+public class TaxBandDomainModelProfile : Profile
 {
-    public TaxBandProfile()
+    public TaxBandDomainModelProfile()
     {
         CreateMap<TaxBand, TaxBandDomainModel>();
     }

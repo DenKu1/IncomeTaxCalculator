@@ -26,6 +26,16 @@ public class TaxBandService : ITaxBandService
         return taxBandDomainModels.Sum(taxBand => CalculateBandTax(taxBand, grossAnnualSalary));
     }
 
+    public Task AddTaxBandAsync(TaxBandDomainModel taxBandDomainModel)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void DeleteTaxBand(Guid id)
+    {
+        throw new NotImplementedException();
+    }
+
     private static decimal CalculateBandTax(TaxBandDomainModel taxBand, decimal grossAnnualSalary)
     {
         return CalculateSalaryWithinTaxBand(taxBand, grossAnnualSalary) * taxBand.TaxRate / 100;
