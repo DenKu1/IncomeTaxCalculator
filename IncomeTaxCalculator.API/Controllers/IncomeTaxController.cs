@@ -24,6 +24,9 @@ public class IncomeTaxController : ControllerBase
     [HttpPost("calculate")]
     public async Task<IActionResult> CalculateIncomeTax([FromBody] CalculateTaxRequestViewModel calculateTaxRequestViewModel)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ResponseViewModel.ErrorResponse(ModelState));
+
         var result = await _incomeTaxService.CalculateIncomeTaxAsync(calculateTaxRequestViewModel.GrossAnnualSalary);
 
         return Ok(ResponseViewModel<CalculateTaxResponseViewModel>.SuccessResponse(

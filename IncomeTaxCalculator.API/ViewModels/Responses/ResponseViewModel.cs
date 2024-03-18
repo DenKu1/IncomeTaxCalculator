@@ -1,4 +1,6 @@
-﻿namespace IncomeTaxCalculator.API.ViewModels.Responses;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+
+namespace IncomeTaxCalculator.API.ViewModels.Responses;
 
 public class ResponseViewModel
 {
@@ -15,6 +17,14 @@ public class ResponseViewModel
     {
         IsSuccess = false,
         Message = message
+    };
+
+    public static ResponseViewModel ErrorResponse(ModelStateDictionary modelState) => new()
+    {
+        IsSuccess = false,
+        Message = string.Join(" | ", modelState.Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage))
     };
 }
 

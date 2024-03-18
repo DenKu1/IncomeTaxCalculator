@@ -2,12 +2,12 @@
 using IncomeTaxCalculator.Domain.DomainModels;
 using IncomeTaxCalculator.Persistence.Entities;
 
-namespace Print3dMarketplace.AuthAPI.Profiles;
+namespace IncomeTaxCalculator.Domain.Profiles;
 
 public class TaxBandProfile : Profile
 {
-	public TaxBandProfile()
-	{
-		CreateMap<TaxBand, TaxBandDomainModel>();
-	}
+    public TaxBandProfile()
+    {
+        CreateMap<TaxBand, TaxBandDomainModel>();
+    }
 }

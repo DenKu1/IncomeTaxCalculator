@@ -1,11 +1,14 @@
-﻿using IncomeTaxCalculator.API.Middleware;
+﻿using FluentValidation;
+using IncomeTaxCalculator.API.Middleware;
+using IncomeTaxCalculator.API.Profiles;
 using IncomeTaxCalculator.API.Startup;
+using IncomeTaxCalculator.API.Validators;
+using IncomeTaxCalculator.Domain.Profiles;
 using IncomeTaxCalculator.Domain.Services;
 using IncomeTaxCalculator.Domain.Services.Interfaces;
 using IncomeTaxCalculator.Persistence.Repositories;
 using IncomeTaxCalculator.Persistence.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Print3dMarketplace.AuthAPI.Profiles;
 
 namespace IncomeTaxCalculator.API.Startup;
 public static class StartupExtensions
@@ -18,6 +21,11 @@ public static class StartupExtensions
     public static void AddSwaggerGen(this WebApplicationBuilder builder)
     {
         builder.Services.AddSwaggerGen();
+    }
+
+    public static void RegisterValidators(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddValidatorsFromAssemblyContaining<CalculateTaxRequestViewModelValidator>();
     }
 
     public static void RegisterMiddleware(this WebApplication app)

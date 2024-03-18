@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using IncomeTaxCalculator.API.ViewModels.Responses;
 
-namespace Print3dMarketplace.AuthAPI.Profiles;
+namespace IncomeTaxCalculator.API.Profiles;
 
 public class IncomeTaxProfile : Profile
 {
-	public IncomeTaxProfile()
-	{
-		CreateMap<CalculateTaxResultDomainModel, CalculateTaxResponseViewModel>();
-	}
+    public IncomeTaxProfile()
+    {
+        CreateMap<CalculateTaxResultDomainModel, CalculateTaxResponseViewModel>();
+    }
 }

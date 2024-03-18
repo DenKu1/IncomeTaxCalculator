@@ -1,5 +1,7 @@
+using FluentValidation.AspNetCore;
 using IncomeTaxCalculator.API.Startup;
 using IncomeTaxCalculator.Persistence.EF;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,12 +11,20 @@ builder.Services.AddDbContext<IncomeTaxDbContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+builder.Services.Configure<ApiBehaviorOptions>(a =>
+{
+    a.SuppressModelStateInvalidFilter = true;
+});
+
 builder.Services.AddCors();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddFluentValidationAutoValidation();
 
 builder.RegisterMapper();
+builder.RegisterValidators();
 builder.RegisterDependencies();
+
 builder.AddSwaggerGen();
 
 var app = builder.Build();
