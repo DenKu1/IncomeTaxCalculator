@@ -1,10 +1,8 @@
 using IncomeTaxCalculator.API.Startup;
 using IncomeTaxCalculator.Persistence.EF;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
-var assembly = Assembly.GetExecutingAssembly();
 
 builder.Services.AddDbContext<IncomeTaxDbContext>(option =>
 {
@@ -15,7 +13,7 @@ builder.Services.AddCors();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-builder.RegisterMapper(assembly);
+builder.RegisterMapper();
 builder.RegisterDependencies();
 builder.AddSwaggerGen();
 
@@ -29,7 +27,6 @@ app.UseSwaggerUI(c =>
     if (!app.Environment.IsDevelopment())
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Income Tax API");
-        //c.RoutePrefix = "/";
     }
 });
 

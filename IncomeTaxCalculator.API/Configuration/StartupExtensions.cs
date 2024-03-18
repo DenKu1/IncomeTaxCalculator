@@ -5,14 +5,14 @@ using IncomeTaxCalculator.Domain.Services.Interfaces;
 using IncomeTaxCalculator.Persistence.Repositories;
 using IncomeTaxCalculator.Persistence.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
+using Print3dMarketplace.AuthAPI.Profiles;
 
 namespace IncomeTaxCalculator.API.Startup;
 public static class StartupExtensions
 {
-    public static void RegisterMapper(this WebApplicationBuilder builder, Assembly currentAssembly)
+    public static void RegisterMapper(this WebApplicationBuilder builder)
     {
-        builder.Services.AddAutoMapper(currentAssembly);
+        builder.Services.AddAutoMapper(typeof(IncomeTaxProfile), typeof(TaxBandProfile));
     }
 
     public static void AddSwaggerGen(this WebApplicationBuilder builder)
