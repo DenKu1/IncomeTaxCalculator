@@ -32,6 +32,10 @@ For salary: 40000 p.a.
 
 ## Frontend part:
 * Angular SPA
+* Bootstrap, fontawesome
+* Toastr error messages
 
 ## Testing:
-* xUnit, Moq, FluentAssertions
+* xUnit
+* AAA Pattern
+* AutoFixture, FluentAssertions
