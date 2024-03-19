@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.ConfigureLogging();
 
 builder.Services.AddDbContext<IncomeTaxDbContext>(option =>
 {

@@ -21,7 +21,6 @@ public class ExceptionHandlingMiddleware
         }
         catch (Exception ex)
         {
-            // Log stack trace to db
             await HandleExceptionAsync(context, ex);
         }
     }

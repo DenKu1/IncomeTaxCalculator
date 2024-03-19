@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using IncomeTaxCalculator.Domain.DomainModels;
+using IncomeTaxCalculator.Domain.Exceptions;
 using IncomeTaxCalculator.Persistence.Entities;
 using IncomeTaxCalculator.Persistence.Repositories.Interfaces;
 using Microsoft.IdentityModel.Tokens;
@@ -34,7 +35,7 @@ public class TaxBandService : ITaxBandService
         var taxBands = await _taxBandRepository.GetAllAsync();
 
         if (taxBands.IsNullOrEmpty())
-            throw new Exception($"There is no tax bands added. Add at least one tax band");
+            throw new TaxBandOperationException($"There is no tax bands added. Add at least one tax band");
 
         var taxBandDomainModels = _mapper.Map<IEnumerable<TaxBandDomainModel>>(taxBands);
 
@@ -48,14 +49,14 @@ public class TaxBandService : ITaxBandService
         if (currentTopTaxBand != null)
         {
             if (currentTopTaxBand.AnnualSalaryLowerLimit >= taxBandToAdd.AnnualSalaryLowerLimit)
-                throw new Exception($"New lower limit {taxBandToAdd.AnnualSalaryLowerLimit} should be greater than previous {currentTopTaxBand.AnnualSalaryLowerLimit}");
+                throw new TaxBandOperationException($"New lower limit {taxBandToAdd.AnnualSalaryLowerLimit} should be greater than previous {currentTopTaxBand.AnnualSalaryLowerLimit}");
 
             currentTopTaxBand.AnnualSalaryUpperLimit = taxBandToAdd.AnnualSalaryLowerLimit;
         }
         else
         {
             if (taxBandToAdd.AnnualSalaryLowerLimit != 0)
-                throw new Exception($"New lower limit {taxBandToAdd.AnnualSalaryLowerLimit} should be zero for first tax band");
+                throw new TaxBandOperationException($"New lower limit {taxBandToAdd.AnnualSalaryLowerLimit} should be zero for first tax band");
         }
 
         await _taxBandRepository.AddAsync(_mapper.Map<TaxBand>(taxBandToAdd));

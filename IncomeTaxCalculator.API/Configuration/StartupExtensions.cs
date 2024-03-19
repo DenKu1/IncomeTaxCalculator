@@ -11,8 +11,15 @@ using IncomeTaxCalculator.Persistence.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace IncomeTaxCalculator.API.Startup;
+
 public static class StartupExtensions
 {
+    public static void ConfigureLogging(this WebApplicationBuilder builder)
+    {
+        builder.Logging.ClearProviders();
+        builder.Logging.AddConsole(); 
+    }
+
     public static void RegisterMapper(this WebApplicationBuilder builder)
     {
         builder.Services.AddAutoMapper(typeof(IncomeTaxProfile), typeof(TaxBandDomainModelProfile));
@@ -31,6 +38,7 @@ public static class StartupExtensions
     public static void RegisterMiddleware(this WebApplication app)
     {
         app.UseMiddleware<ExceptionHandlingMiddleware>();
+        app.UseMiddleware<LoggingMiddleware>();
     }
 
     public static void UseCors(this WebApplication app)
