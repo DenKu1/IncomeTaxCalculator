@@ -46,6 +46,8 @@ public static class StartupExtensions
         builder.Services.AddScoped<ITaxBandService, TaxBandService>();
 
         builder.Services.AddScoped<ITaxBandRepository, TaxBandRepository>();
+
+        builder.Services.AddScoped<IDbUnitOfWork, DbUnitOfWork>();
     }
 
     public static void ApplyMigration<TContext>(this WebApplication app) where TContext : DbContext

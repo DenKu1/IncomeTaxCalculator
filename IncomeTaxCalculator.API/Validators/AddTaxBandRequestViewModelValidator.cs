@@ -8,14 +8,8 @@ namespace IncomeTaxCalculator.API.Validators
         public AddTaxBandRequestViewModelValidator()
         {
             RuleFor(x => x.AnnualSalaryLowerLimit)
-                .GreaterThan(0)
-                .WithMessage(x => $"'{nameof(x.AnnualSalaryLowerLimit)}': Value {x.AnnualSalaryLowerLimit} is incorrect. It should be greater than zero");
-
-            RuleFor(x => x.AnnualSalaryUpperLimit)
-                .GreaterThan(0)
-                .WithMessage(x => $"'{nameof(x.AnnualSalaryUpperLimit)}': Value {x.AnnualSalaryUpperLimit} is incorrect. It should be greater than zero")
-                .GreaterThan(x => x.AnnualSalaryLowerLimit)
-                .WithMessage(x => $"'{nameof(x.AnnualSalaryUpperLimit)}': Value {x.AnnualSalaryUpperLimit} is incorrect. It should be greater than {nameof(x.AnnualSalaryLowerLimit)}");
+                .GreaterThanOrEqualTo(0)
+                .WithMessage(x => $"'{nameof(x.AnnualSalaryLowerLimit)}': Value {x.AnnualSalaryLowerLimit} is incorrect. It should be greater or equal to zero");
 
             RuleFor(x => x.TaxRate)
                 .GreaterThanOrEqualTo(0)

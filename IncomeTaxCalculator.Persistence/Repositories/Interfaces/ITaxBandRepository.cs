@@ -1,4 +1,5 @@
 ﻿using IncomeTaxCalculator.Persistence.Entities;
+using System.Linq.Expressions;
 
 namespace IncomeTaxCalculator.Persistence.Repositories.Interfaces
 {
@@ -7,6 +8,7 @@ namespace IncomeTaxCalculator.Persistence.Repositories.Interfaces
         Task AddAsync(TaxBand taxBand);
         Task<IEnumerable<TaxBand>> GetAllAsync();
         Task<TaxBand> GetByIdAsync(Guid id);
+        Task<TaxBand> GetSingleOrDefaultAsync(Expression<Func<TaxBand, bool>> predicate);
         void Remove(TaxBand taxBand);
     }
 }

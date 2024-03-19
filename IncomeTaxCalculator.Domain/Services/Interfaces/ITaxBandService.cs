@@ -4,7 +4,8 @@ namespace IncomeTaxCalculator.Domain.Services;
 
 public interface ITaxBandService
 {
+    Task<IEnumerable<TaxBandDomainModel>> GetAllTaxBandsAsync();
     Task<decimal> CalculateTotalBandTaxAsync(decimal grossAnnualSalary);
-    Task AddTaxBandAsync(TaxBandDomainModel taxBandDomainModel);
-    void DeleteTaxBand(Guid id);
+    Task PushTaxBandAsync(TaxBandDomainModel taxBandDomainModel);
+    Task PopTaxBandAsync();
 }

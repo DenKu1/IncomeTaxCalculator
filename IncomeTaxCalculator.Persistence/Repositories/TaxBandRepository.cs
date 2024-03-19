@@ -2,6 +2,7 @@
 using IncomeTaxCalculator.Persistence.Entities;
 using IncomeTaxCalculator.Persistence.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace IncomeTaxCalculator.Persistence.Repositories
 {
@@ -22,6 +23,11 @@ namespace IncomeTaxCalculator.Persistence.Repositories
         public async Task<TaxBand> GetByIdAsync(Guid id)
         {
             return await _context.Set<TaxBand>().FindAsync(id);
+        }
+
+        public async Task<TaxBand> GetSingleOrDefaultAsync(Expression<Func<TaxBand, bool>> predicate)
+        {
+            return await _context.Set<TaxBand>().SingleOrDefaultAsync(predicate);
         }
 
         public async Task AddAsync(TaxBand taxBand)

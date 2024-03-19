@@ -7,6 +7,6 @@ public class IncomeTaxProfile : Profile
 {
     public IncomeTaxProfile()
     {
-        CreateMap<CalculateTaxResultDomainModel, CalculateTaxResponseViewModel>();
+        CreateMap<CalculateTaxResultDomainModel, CalculateIncomeTaxResponseViewModel>();
     }
 }

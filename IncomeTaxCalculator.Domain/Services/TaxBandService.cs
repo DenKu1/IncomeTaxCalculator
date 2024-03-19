@@ -1,39 +1,83 @@
 ﻿using AutoMapper;
 using IncomeTaxCalculator.Domain.DomainModels;
+using IncomeTaxCalculator.Persistence.Entities;
 using IncomeTaxCalculator.Persistence.Repositories.Interfaces;
+using Microsoft.IdentityModel.Tokens;
 
 namespace IncomeTaxCalculator.Domain.Services;
 
 public class TaxBandService : ITaxBandService
 {
     private readonly IMapper _mapper;
+    private readonly IDbUnitOfWork _unitOfWork;
     private readonly ITaxBandRepository _taxBandRepository;
 
     public TaxBandService(
-        IMapper mapper, 
+        IMapper mapper,
+        IDbUnitOfWork unitOfWork,
         ITaxBandRepository taxBandRepository)
     {
         _mapper = mapper;
+        _unitOfWork = unitOfWork;
         _taxBandRepository = taxBandRepository;
+    }
+
+    public async Task<IEnumerable<TaxBandDomainModel>> GetAllTaxBandsAsync()
+    {
+        var taxBands = await _taxBandRepository.GetAllAsync();
+
+        return _mapper.Map<IEnumerable<TaxBandDomainModel>>(taxBands);
     }
 
     public async Task<decimal> CalculateTotalBandTaxAsync(decimal grossAnnualSalary)
     {
         var taxBands = await _taxBandRepository.GetAllAsync();
 
+        if (taxBands.IsNullOrEmpty())
+            throw new Exception($"There is no tax bands added. Add at least one tax band");
+
         var taxBandDomainModels = _mapper.Map<IEnumerable<TaxBandDomainModel>>(taxBands);
 
         return taxBandDomainModels.Sum(taxBand => CalculateBandTax(taxBand, grossAnnualSalary));
     }
 
-    public Task AddTaxBandAsync(TaxBandDomainModel taxBandDomainModel)
+    public async Task PushTaxBandAsync(TaxBandDomainModel taxBandToAdd)
     {
-        throw new NotImplementedException();
+        var currentTopTaxBand = await _taxBandRepository.GetSingleOrDefaultAsync(x => x.AnnualSalaryUpperLimit == null);
+
+        if (currentTopTaxBand != null)
+        {
+            if (currentTopTaxBand.AnnualSalaryLowerLimit >= taxBandToAdd.AnnualSalaryLowerLimit)
+                throw new Exception($"New lower limit {taxBandToAdd.AnnualSalaryLowerLimit} should be greater than previous {currentTopTaxBand.AnnualSalaryLowerLimit}");
+
+            currentTopTaxBand.AnnualSalaryUpperLimit = taxBandToAdd.AnnualSalaryLowerLimit;
+        }
+        else
+        {
+            if (taxBandToAdd.AnnualSalaryLowerLimit != 0)
+                throw new Exception($"New lower limit {taxBandToAdd.AnnualSalaryLowerLimit} should be zero for first tax band");
+        }
+
+        await _taxBandRepository.AddAsync(_mapper.Map<TaxBand>(taxBandToAdd));
+
+        await _unitOfWork.SaveChangesAsync();
     }
 
-    public void DeleteTaxBand(Guid id)
+    public async Task PopTaxBandAsync()
     {
-        throw new NotImplementedException();
+        var currentTopTaxBand = await _taxBandRepository.GetSingleOrDefaultAsync(x => x.AnnualSalaryUpperLimit == null);
+
+        if (currentTopTaxBand != null)
+        {
+            var newTopTaxBand = await _taxBandRepository.GetSingleOrDefaultAsync(x => currentTopTaxBand.AnnualSalaryLowerLimit == x.AnnualSalaryUpperLimit);
+
+            if (newTopTaxBand != null)
+                newTopTaxBand.AnnualSalaryUpperLimit = null;
+
+            _taxBandRepository.Remove(currentTopTaxBand);
+        }
+
+        await _unitOfWork.SaveChangesAsync();
     }
 
     private static decimal CalculateBandTax(TaxBandDomainModel taxBand, decimal grossAnnualSalary)

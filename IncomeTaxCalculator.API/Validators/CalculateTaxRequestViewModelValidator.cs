@@ -3,7 +3,7 @@ using IncomeTaxCalculator.API.ViewModels.Requests;
 
 namespace IncomeTaxCalculator.API.Validators
 {
-    public class CalculateTaxRequestViewModelValidator : AbstractValidator<CalculateTaxRequestViewModel>
+    public class CalculateTaxRequestViewModelValidator : AbstractValidator<CalculateIncomeTaxRequestViewModel>
     {
         public CalculateTaxRequestViewModelValidator()
         {

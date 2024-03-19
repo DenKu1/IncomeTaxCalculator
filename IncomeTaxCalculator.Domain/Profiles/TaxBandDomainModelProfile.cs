@@ -8,6 +8,6 @@ public class TaxBandDomainModelProfile : Profile
 {
     public TaxBandDomainModelProfile()
     {
-        CreateMap<TaxBand, TaxBandDomainModel>();
+        CreateMap<TaxBand, TaxBandDomainModel>().ReverseMap();
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace IncomeTaxCalculator.API.ViewModels.Responses
 {
-    public class CalculateTaxResponseViewModel
+    public class CalculateIncomeTaxResponseViewModel
     {
         public decimal GrossAnnualSalary { get; set; }
         public decimal GrossMonthlySalary { get; set; }
