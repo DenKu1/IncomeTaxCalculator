@@ -20,11 +20,6 @@ namespace IncomeTaxCalculator.Persistence.Repositories
             return await _context.Set<TaxBand>().ToListAsync();
         }
 
-        public async Task<TaxBand> GetByIdAsync(Guid id)
-        {
-            return await _context.Set<TaxBand>().FindAsync(id);
-        }
-
         public async Task<TaxBand> GetSingleOrDefaultAsync(Expression<Func<TaxBand, bool>> predicate)
         {
             return await _context.Set<TaxBand>().SingleOrDefaultAsync(predicate);
