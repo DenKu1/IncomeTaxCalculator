@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-center align-items-center vh-100">
 
-  <div class="itc-bg-color-background-accent border" style="max-width: 500px;">
+  <div class="itc-bg-color-background-accent border" style="max-width: 550px;">
     <!-- Gross Annual Salary Input -->
     <div class="d-flex flex-row align-items-center" style="height: 75px;">
       <div class="p-2">
@@ -16,7 +16,9 @@
         <button [disabled]="grossAnnualSalaryFormControl.invalid || grossAnnualSalaryFormControl.disabled"
                 type="button"
                 (click)="calculateIncomeTax()"
-                class="btn btn-secondary">
+                class="btn btn-secondary"
+                style="width:100px;">
+          <span *ngIf="grossAnnualSalaryFormControl.disabled" class="spinner-border spinner-border-sm mr-1"></span>
           Calc
         </button>
       </div>
