@@ -13,7 +13,7 @@ public class ExceptionHandlingMiddleware
         _next = next;
     }
 
-    public async Task Invoke(HttpContext context)
+    public async Task InvokeAsync(HttpContext context)
     {
         try
         {
@@ -30,11 +30,8 @@ public class ExceptionHandlingMiddleware
         context.Response.ContentType = "application/json; charset=UTF-8";
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-        var content = new
-        {
-            context.Response.StatusCode,
-            Message = ResponseViewModel.ErrorResponse($"Internal Server Error: {exception.Message}; InnerException: {exception.InnerException?.Message}")
-        };
+        var content = ResponseViewModel.ErrorResponse(
+            $"Internal Server Error: {exception.Message}; InnerException: {exception.InnerException?.Message}");
 
         await context.Response.WriteAsync(JsonSerializer.Serialize(content));
         await context.Response.Body.FlushAsync();

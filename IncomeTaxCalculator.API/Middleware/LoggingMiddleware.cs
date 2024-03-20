@@ -5,7 +5,7 @@ namespace IncomeTaxCalculator.API.Middleware
     public class LoggingMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ILogger _logger;
+        private readonly ILogger<LoggingMiddleware> _logger;
 
         public LoggingMiddleware(RequestDelegate next, ILogger<LoggingMiddleware> logger)
         {
@@ -13,7 +13,7 @@ namespace IncomeTaxCalculator.API.Middleware
             _logger = logger;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task InvokeAsync(HttpContext context)
         {
             try
             {
