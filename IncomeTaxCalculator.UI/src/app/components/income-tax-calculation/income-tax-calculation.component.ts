@@ -27,7 +27,7 @@ export class IncomeTaxCalculationComponent {
 
     this.grossAnnualSalaryFormControl.disable();
 
-    let grossAnnualSalary = Number(this.grossAnnualSalaryFormControl.value);
+    let grossAnnualSalary: number = Number(this.grossAnnualSalaryFormControl.value);
     let request = this.createCalculateIncomeTaxRequestModel(grossAnnualSalary);
 
     this.incomeTaxService.calculateIncomeTax(request)
@@ -37,12 +37,7 @@ export class IncomeTaxCalculationComponent {
 
           this.grossAnnualSalaryFormControl.enable();
         },
-        err => {
-          let apiError: ResponseModel = err.error;
-
-          this.toastrService.error("Error. " + apiError.message);
-          this.grossAnnualSalaryFormControl.enable();
-        });
+        err => this.handleError(err));
   }
 
   createCalculateIncomeTaxRequestModel(grossAnnualSalary: number): CalculateIncomeTaxRequestModel {
@@ -52,5 +47,12 @@ export class IncomeTaxCalculationComponent {
     }
 
     return requestModel;
+  }
+
+  handleError(err): void {
+    let apiError: ResponseModel = err.error;
+    this.toastrService.error("Error. " + apiError.message);
+
+    this.grossAnnualSalaryFormControl.enable();
   }
 }
