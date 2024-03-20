@@ -26,7 +26,7 @@ builder.RegisterMapper();
 builder.RegisterValidators();
 builder.RegisterDependencies();
 
-builder.AddSwaggerGen();
+builder.Services.AddSwaggerGen(x => x.EnableAnnotations());
 
 var app = builder.Build();
 
