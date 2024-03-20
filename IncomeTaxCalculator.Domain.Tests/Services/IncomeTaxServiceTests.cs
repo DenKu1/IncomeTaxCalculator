@@ -1,46 +1,45 @@
 ﻿using IncomeTaxCalculator.API.ViewModels.Responses;
 using IncomeTaxCalculator.Domain.Services;
 
-namespace IncomeTaxCalculator.Domain.Tests.Services
+namespace IncomeTaxCalculator.Domain.Tests.Services;
+
+public class TaxBandServiceTests
 {
-    public class TaxBandServiceTests
+    private readonly ITaxBandService _taxBandService;
+
+    public TaxBandServiceTests()
     {
-        private readonly ITaxBandService _taxBandService;
+        _taxBandService = Substitute.For<ITaxBandService>();
+    }
 
-        public TaxBandServiceTests()
+    [Fact]
+    public async Task GetAllTaxBandsAsync_Should_Calculate_Tax_Correctly()
+    {
+        // Arrange
+        var sut = CreateSut();
+        var grossAnnualSalary = 40_000m;
+
+        var expected = new CalculateTaxResultDomainModel
         {
-            _taxBandService = Substitute.For<ITaxBandService>();
-        }
+            GrossAnnualSalary = 40_000m,
+            GrossMonthlySalary = 40_000m / 12,
+            NetAnnualSalary = 29_000m,
+            NetMonthlySalary = 29_000m / 12,
+            AnnualTaxPaid = 11_000m,
+            MonthlyTaxPaid = 11_000m / 12
+        };
 
-        [Fact]
-        public async Task GetAllTaxBandsAsync_Should_Calculate_Tax_Correctly()
-        {
-            // Arrange
-            var sut = CreateSut();
-            var grossAnnualSalary = 40_000m;
+        _taxBandService.CalculateTotalBandTaxAsync(grossAnnualSalary).Returns(11_000m);
 
-            var expected = new CalculateTaxResultDomainModel
-            {
-                GrossAnnualSalary = 40_000m,
-                GrossMonthlySalary = 40_000m / 12,
-                NetAnnualSalary = 29_000m,
-                NetMonthlySalary = 29_000m / 12,
-                AnnualTaxPaid = 11_000m,
-                MonthlyTaxPaid = 11_000m / 12
-            };
+        // Act
+        var actual = await sut.CalculateIncomeTaxAsync(grossAnnualSalary);
 
-            _taxBandService.CalculateTotalBandTaxAsync(grossAnnualSalary).Returns(11_000m);
+        // Assert
+        actual.Should().BeEquivalentTo(expected);
+    }
 
-            // Act
-            var actual = await sut.CalculateIncomeTaxAsync(grossAnnualSalary);
-
-            // Assert
-            actual.Should().BeEquivalentTo(expected);
-        }
-
-        private IncomeTaxService CreateSut()
-        {
-            return new IncomeTaxService(_taxBandService);
-        }
+    private IncomeTaxService CreateSut()
+    {
+        return new IncomeTaxService(_taxBandService);
     }
 }

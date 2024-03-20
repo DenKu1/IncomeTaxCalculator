@@ -3,48 +3,47 @@ using IncomeTaxCalculator.Persistence.Entities;
 using IncomeTaxCalculator.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace IncomeTaxCalculator.Persistence.Tests.Repositories
+namespace IncomeTaxCalculator.Persistence.Tests.Repositories;
+
+public class DbUnitOfWorkTests
 {
-    public class DbUnitOfWorkTests
+    private readonly Fixture _fixture;
+    private readonly IncomeTaxDbContext _context;
+
+    public DbUnitOfWorkTests()
     {
-        private readonly Fixture _fixture;
-        private readonly IncomeTaxDbContext _context;
+        _fixture = new Fixture();
 
-        public DbUnitOfWorkTests()
-        {
-            _fixture = new Fixture();
+        var options = new DbContextOptionsBuilder<IncomeTaxDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
 
-            var options = new DbContextOptionsBuilder<IncomeTaxDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
+        _context = new IncomeTaxDbContext(options);
+    }
 
-            _context = new IncomeTaxDbContext(options);
-        }
+    [Fact]
+    public async Task SaveChangesAsync_Should_Save_Data_To_Context()
+    {
+        // Arrange
+        var sut = CreateSut();
 
-        [Fact]
-        public async Task SaveChangesAsync_Should_Save_Data_To_Context()
-        {
-            // Arrange
-            var sut = CreateSut();
+        var taxBandToAdd = _fixture
+            .Build<TaxBand>()
+            .With(x => x.Id, Guid.NewGuid())
+            .Create();
 
-            var taxBandToAdd = _fixture
-                .Build<TaxBand>()
-                .With(x => x.Id, Guid.NewGuid())
-                .Create();
+        _context.TaxBands.Add(taxBandToAdd);
 
-            _context.TaxBands.Add(taxBandToAdd);
+        // Act
+        await sut.SaveChangesAsync();
 
-            // Act
-            await sut.SaveChangesAsync();
+        // Assert
+        var savedRecord = await _context.TaxBands.FirstOrDefaultAsync(x => x.Id == taxBandToAdd.Id);
+        savedRecord.Should().NotBeNull();
+    }
 
-            // Assert
-            var savedRecord = await _context.TaxBands.FirstOrDefaultAsync(x => x.Id == taxBandToAdd.Id);
-            savedRecord.Should().NotBeNull();
-        }
-
-        private DbUnitOfWork CreateSut()
-        {
-            return new DbUnitOfWork(_context);
-        }
+    private DbUnitOfWork CreateSut()
+    {
+        return new DbUnitOfWork(_context);
     }
 }
