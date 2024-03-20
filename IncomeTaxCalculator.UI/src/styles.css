@@ -3,3 +3,4 @@
 @import './common-styles/global.css';
 @import './common-styles/variables.css';
 @import './common-styles/fonts.css';
+@import 'ngx-toastr/toastr';

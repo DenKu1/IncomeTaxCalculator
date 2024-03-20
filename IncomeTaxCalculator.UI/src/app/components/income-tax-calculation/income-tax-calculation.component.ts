@@ -40,7 +40,7 @@ export class IncomeTaxCalculationComponent {
         err => {
           let apiError: ResponseModel = err.error;
 
-          this.toastrService.error("Error! " + apiError.message);
+          this.toastrService.error("Error. " + apiError.message);
           this.grossAnnualSalaryFormControl.enable();
         });
   }
