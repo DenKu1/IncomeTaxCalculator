@@ -6,7 +6,8 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
 const routes: Routes = [
   {
     path: '',
-    component: IncomeTaxCalculationComponent // Refactor
+    redirectTo: '/taxes/calculate-income-tax',
+    pathMatch: 'full'
   },
   {
     path: 'taxes/calculate-income-tax',
