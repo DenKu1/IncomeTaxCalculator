@@ -1,14 +1,30 @@
-<div class="card text-dark bg-light mb-3" style="max-width: 500px;">
-  <div class="card-header text-center">
-    <label for="grossAnnualSalaryFormControl">Gross Annual Salary: </label>
-    <input id="grossAnnualSalaryFormControl" type="text" [formControl]="grossAnnualSalaryFormControl">
-    <button [disabled]="grossAnnualSalaryFormControl.invalid || grossAnnualSalaryFormControl.disabled"
-            type="button"
-            (click)="calculateIncomeTax()">
-      Calc
-    </button>
+<div class="d-flex justify-content-center align-items-center vh-100">
+
+  <div class="itc-bg-color-background-accent border" style="max-width: 500px;">
+    <!-- Gross Annual Salary Input -->
+    <div class="d-flex flex-row align-items-center" style="height: 75px;">
+      <div class="p-2">
+        <label for="grossAnnualSalaryFormControl">Gross Annual Salary: </label>
+      </div>
+      <div class="p-2">
+        <input id="grossAnnualSalaryFormControl"
+               type="text"
+               [formControl]="grossAnnualSalaryFormControl"
+               class="form-control">
+      </div>
+      <div class="p-2">
+        <button [disabled]="grossAnnualSalaryFormControl.invalid || grossAnnualSalaryFormControl.disabled"
+                type="button"
+                (click)="calculateIncomeTax()"
+                class="btn btn-secondary">
+          Calc
+        </button>
+      </div>
+    </div>
+
+    <!-- Gross Annual Salary Validation Errors -->
     <div *ngIf="grossAnnualSalaryFormControl.invalid && (grossAnnualSalaryFormControl.dirty || grossAnnualSalaryFormControl.touched)"
-         class="alert alert-danger">
+         class="alert alert-danger mx-2 mb-3">
       <div *ngIf="grossAnnualSalaryFormControl.errors.required">
         Gross annual salary value is required
       </div>
@@ -17,17 +33,17 @@
       </div>
     </div>
 
+    <hr class="m-0">
 
-    <div *ngIf="grossAnnualSalaryFormControl.disabled">Loading</div>
-  </div>
-  <div *ngIf="incomeTaxOutputInfo" class="card-body">
-    <ul>
-      <li class="card-text">Gross Annual Salary: {{incomeTaxOutputInfo.grossAnnualSalary}} £</li>
-      <li>Gross Monthly Salary: {{incomeTaxOutputInfo.grossMonthlySalary}} £</li>
-      <li>Net Annual Salary: {{incomeTaxOutputInfo.netAnnualSalary}} £</li>
-      <li>Net Monthly Salary: {{incomeTaxOutputInfo.netMonthlySalary}} £</li>
-      <li>Annual Tax Paid: {{incomeTaxOutputInfo.annualTaxPaid}} £</li>
-      <li>Monthly Tax Paid: {{incomeTaxOutputInfo.monthlyTaxPaid}} £</li>
-     </ul>
+    <!-- Gross Annual Salary Output -->
+    <div *ngIf="incomeTaxOutputInfo" class="d-flex flex-column mb-3">
+      <div class="p-2">Gross Annual Salary: {{incomeTaxOutputInfo.grossAnnualSalary}} £</div>
+      <div class="p-2">Gross Monthly Salary: {{incomeTaxOutputInfo.grossMonthlySalary}} £</div>
+      <div class="p-2">Net Annual Salary: {{incomeTaxOutputInfo.netAnnualSalary}} £</div>
+      <div class="p-2">Net Monthly Salary: {{incomeTaxOutputInfo.netMonthlySalary}} £</div>
+      <div class="p-2">Annual Tax Paid: {{incomeTaxOutputInfo.annualTaxPaid}} £</div>
+      <div class="p-2">Monthly Tax Paid: {{incomeTaxOutputInfo.monthlyTaxPaid}} £</div>
+    </div>
+
   </div>
 </div>
