@@ -5,16 +5,10 @@ namespace IncomeTaxCalculator.Domain.Tests.Services
 {
     public class TaxBandServiceTests
     {
-        private readonly IMapper _mapper;
-        private readonly Fixture _fixture;
-
         private readonly ITaxBandService _taxBandService;
 
         public TaxBandServiceTests()
         {
-            _mapper = Substitute.For<IMapper>();
-            _fixture = new Fixture();
-
             _taxBandService = Substitute.For<ITaxBandService>();
         }
 

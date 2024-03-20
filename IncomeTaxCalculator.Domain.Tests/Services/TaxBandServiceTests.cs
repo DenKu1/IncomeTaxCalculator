@@ -11,7 +11,7 @@ namespace IncomeTaxCalculator.Domain.Tests.Services
         private readonly IMapper _mapper;
         private readonly Fixture _fixture;
 
-        private readonly IDbUnitOfWork _uow;
+        private readonly IDbUnitOfWork _unitOfWork;
         private readonly ITaxBandRepository _taxBandRepository;
 
         public IncomeTaxServiceTests()
@@ -19,7 +19,7 @@ namespace IncomeTaxCalculator.Domain.Tests.Services
             _mapper = Substitute.For<IMapper>();
             _fixture = new Fixture();
 
-            _uow = Substitute.For<IDbUnitOfWork>();
+            _unitOfWork = Substitute.For<IDbUnitOfWork>();
             _taxBandRepository = Substitute.For<ITaxBandRepository>();
         }
 
@@ -101,9 +101,136 @@ namespace IncomeTaxCalculator.Domain.Tests.Services
             actual.Should().Be(expectedTotalTax);
         }
 
+        [Fact]
+        public async Task PushTaxBandAsync_Should_Throw_TaxBandOperationException_When_First_TaxBand_LowerLimit_NotZero()
+        {
+            // Arrange
+            var sut = CreateSut();
+            var taxBandToAdd = _fixture
+                .Build<TaxBandDomainModel>()
+                .With(x => x.AnnualSalaryLowerLimit, 10_000)
+                .Create();
+
+            _taxBandRepository.GetSingleOrDefaultAsync(Arg.Any<Expression<Func<TaxBand, bool>>>()).Returns((TaxBand)null);
+
+            // Act
+            var act = async () => await sut.PushTaxBandAsync(taxBandToAdd);
+
+            // Assert
+            await act.Should().ThrowAsync<TaxBandOperationException>();
+        }
+
+        [Fact]
+        public async Task PushTaxBandAsync_Should_Add_TaxBand_When_First_TaxBand_LowerLimit_Is_Zero()
+        {
+            // Arrange
+            var sut = CreateSut();
+            var taxBandToAdd = _fixture
+                .Build<TaxBandDomainModel>()
+                .With(x => x.AnnualSalaryLowerLimit, 0)
+                .Create();
+
+            _taxBandRepository.GetSingleOrDefaultAsync(Arg.Any<Expression<Func<TaxBand, bool>>>()).Returns((TaxBand)null);
+
+            // Act
+            await sut.PushTaxBandAsync(taxBandToAdd);
+
+            // Assert
+            await _taxBandRepository.ReceivedWithAnyArgs(1).AddAsync(Arg.Any<TaxBand>());
+            await _unitOfWork.ReceivedWithAnyArgs(1).SaveChangesAsync();
+        }
+
+        [Fact]
+        public async Task PushTaxBandAsync_Should_Throw_TaxBandOperationException_When_New_Lower_Limit_Lower_Than_Previous()
+        {
+            // Arrange
+            var sut = CreateSut();
+            var taxBandToAdd = _fixture
+                .Build<TaxBandDomainModel>()
+                .With(x => x.AnnualSalaryLowerLimit, 5_000)
+                .Create();
+
+            var previousTaxBand = _fixture
+                .Build<TaxBand>()
+                .With(x => x.AnnualSalaryLowerLimit, 10_000)
+                .Create();
+
+            _taxBandRepository.GetSingleOrDefaultAsync(Arg.Any<Expression<Func<TaxBand, bool>>>()).Returns(previousTaxBand);
+
+            // Act
+            var act = async () => await sut.PushTaxBandAsync(taxBandToAdd);
+
+            // Assert
+            await act.Should().ThrowAsync<TaxBandOperationException>();
+        }
+
+        [Fact]
+        public async Task PushTaxBandAsync_Should_Add_TaxBand_And_Updated_Previous_Upper_Limit()
+        {
+            // Arrange
+            var sut = CreateSut();
+            var taxBandToAdd = _fixture
+                .Build<TaxBandDomainModel>()
+                .With(x => x.AnnualSalaryLowerLimit, 10_000)
+                .Create();
+
+            var previousTaxBand = _fixture
+                .Build<TaxBand>()
+                .With(x => x.AnnualSalaryLowerLimit, 5_000)
+                .Create();
+
+            _taxBandRepository.GetSingleOrDefaultAsync(Arg.Any<Expression<Func<TaxBand, bool>>>()).Returns(previousTaxBand);
+
+            // Act
+            await sut.PushTaxBandAsync(taxBandToAdd);
+
+            // Assert
+            await _taxBandRepository.ReceivedWithAnyArgs(1).AddAsync(Arg.Any<TaxBand>());
+            await _unitOfWork.ReceivedWithAnyArgs(1).SaveChangesAsync();
+
+            previousTaxBand.AnnualSalaryUpperLimit.Should().Be(taxBandToAdd.AnnualSalaryLowerLimit);
+        }
+
+        [Fact]
+        public async Task PopTaxBandAsync_Should_Not_Remove_If_No_Tax_Bands()
+        {
+            // Arrange
+            var sut = CreateSut();
+            _taxBandRepository.GetSingleOrDefaultAsync(Arg.Any<Expression<Func<TaxBand, bool>>>()).Returns((TaxBand)null);
+
+            // Act
+            await sut.PopTaxBandAsync();
+
+            // Assert
+            _taxBandRepository.DidNotReceiveWithAnyArgs().Remove(Arg.Any<TaxBand>());
+            await _unitOfWork.DidNotReceiveWithAnyArgs().SaveChangesAsync();
+        }
+
+        [Fact]
+        public async Task PopTaxBandAsync_Should_Remove_Latest()
+        {
+            // Arrange
+            var sut = CreateSut();
+
+            var latestTaxBand = _fixture
+                .Build<TaxBand>()
+                .Without(x => x.AnnualSalaryUpperLimit)
+                .Create();
+
+            _taxBandRepository.GetSingleOrDefaultAsync(Arg.Any<Expression<Func<TaxBand, bool>>>())
+                .Returns(latestTaxBand);
+
+            // Act
+            await sut.PopTaxBandAsync();
+
+            // Assert
+            _taxBandRepository.Received(1).Remove(latestTaxBand);
+            await _unitOfWork.Received(1).SaveChangesAsync();
+        }
+
         private TaxBandService CreateSut()
         {
-            return new TaxBandService(_mapper, _uow, _taxBandRepository);
+            return new TaxBandService(_mapper, _unitOfWork, _taxBandRepository);
         }
     }
 }

@@ -66,18 +66,19 @@ public class TaxBandService : ITaxBandService
 
     public async Task PopTaxBandAsync()
     {
-        var currentTopTaxBand = await _taxBandRepository.GetSingleOrDefaultAsync(x => x.AnnualSalaryUpperLimit == null);
+        var currentTopTaxBand = await _taxBandRepository
+            .GetSingleOrDefaultAsync(x => x.AnnualSalaryUpperLimit == null);
 
-        if (currentTopTaxBand != null)
-        {
-            var newTopTaxBand = await _taxBandRepository.GetSingleOrDefaultAsync(x => currentTopTaxBand.AnnualSalaryLowerLimit == x.AnnualSalaryUpperLimit);
+        if (currentTopTaxBand == null)
+            return;
 
-            if (newTopTaxBand != null)
-                newTopTaxBand.AnnualSalaryUpperLimit = null;
+        var newTopTaxBand = await _taxBandRepository
+            .GetSingleOrDefaultAsync(x => currentTopTaxBand.AnnualSalaryLowerLimit == x.AnnualSalaryUpperLimit);
 
-            _taxBandRepository.Remove(currentTopTaxBand);
-        }
+        if (newTopTaxBand != null)
+            newTopTaxBand.AnnualSalaryUpperLimit = null;
 
+        _taxBandRepository.Remove(currentTopTaxBand);
         await _unitOfWork.SaveChangesAsync();
     }
 
@@ -88,9 +89,12 @@ public class TaxBandService : ITaxBandService
 
     private static decimal CalculateSalaryWithinTaxBand(TaxBandDomainModel taxBand, decimal grossAnnualSalary)
     {
-        if (taxBand.AnnualSalaryUpperLimit.HasValue && taxBand.AnnualSalaryUpperLimit.Value < grossAnnualSalary)
-            return taxBand.AnnualSalaryUpperLimit.Value - taxBand.AnnualSalaryLowerLimit;
+        if (grossAnnualSalary < taxBand.AnnualSalaryLowerLimit)
+            return 0;
 
-        return grossAnnualSalary - taxBand.AnnualSalaryLowerLimit;
+        if (!taxBand.AnnualSalaryUpperLimit.HasValue || grossAnnualSalary < taxBand.AnnualSalaryUpperLimit.Value)
+            return grossAnnualSalary - taxBand.AnnualSalaryLowerLimit;
+
+        return taxBand.AnnualSalaryUpperLimit.Value - taxBand.AnnualSalaryLowerLimit;
     }
 }
