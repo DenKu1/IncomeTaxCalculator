@@ -31,7 +31,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IncomeTaxCalculator.API\IncomeTaxCalculator.API.csproj" />
-    <ProjectReference Include="..\IncomeTaxCalculator.Persistence\IncomeTaxCalculator.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

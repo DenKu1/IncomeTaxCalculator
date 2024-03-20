@@ -46,6 +46,5 @@ app.UseCors();
 app.UseHttpsRedirection();
 
 app.MapControllers();
-app.ApplyMigration<IncomeTaxDbContext>();
 
 app.Run();

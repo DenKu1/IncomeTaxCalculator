@@ -37,5 +37,7 @@ For salary: 40000 p.a.
 
 ## Testing:
 * xUnit
+* Unit & Integration tests
 * AAA Pattern
-* AutoFixture, FluentAssertions
+* AutoFixture, FluentAssertions, NSubstitute
+* Inmemory mock database context
