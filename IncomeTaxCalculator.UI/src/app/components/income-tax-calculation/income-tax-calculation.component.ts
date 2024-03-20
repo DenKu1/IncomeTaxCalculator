@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { ResponseModel } from '../../models/common/responseModel';
 import { CalculateIncomeTaxRequestModel } from '../../models/income-tax-calculation/calculateIncomeTaxRequestModel';
 import { CalculateIncomeTaxResponseModel } from '../../models/income-tax-calculation/calculateIncomeTaxResponseModel';
 import { IncomeTaxService } from '../../services/income-tax.service';
@@ -13,66 +12,45 @@ import { IncomeTaxService } from '../../services/income-tax.service';
   styleUrls: ['./income-tax-calculation.component.css']
 })
 export class IncomeTaxCalculationComponent {
-  
+  grossAnnualSalaryFormControl = new FormControl('', [Validators.required, Validators.min(1)]);
   incomeTaxOutputInfo: CalculateIncomeTaxResponseModel;
-  incomeTaxCalculationForm: IncomeTaxCalculationForm;
 
   constructor(
-    private router: Router,
-    private activeRoute: ActivatedRoute,
-    private formBuilder: FormBuilder,
     private incomeTaxService: IncomeTaxService,
     private toastrService: ToastrService) {
-    this.incomeTaxCalculationForm = new IncomeTaxCalculationForm(this.formBuilder);
   }
 
   calculateIncomeTax(): void {
-    if (this.incomeTaxCalculationForm.form.invalid) {
+    if (this.grossAnnualSalaryFormControl.invalid) {
       return;
     }
 
-    this.incomeTaxCalculationForm.startLoading();
+    this.grossAnnualSalaryFormControl.disable();
 
-    var requestModel: CalculateIncomeTaxRequestModel =
-    {
-      grossAnnualSalary: this.incomeTaxCalculationForm.f.grossAnnualSalary.value
-    }
+    let grossAnnualSalary = Number(this.grossAnnualSalaryFormControl.value);
+    let request = this.createCalculateIncomeTaxRequestModel(grossAnnualSalary);
 
-    this.incomeTaxService.calculateIncomeTax(requestModel)
-      //.pipe(first())
+    this.incomeTaxService.calculateIncomeTax(request)
       .subscribe(
         response => {
-          this.incomeTaxOutputInfo = response; // Update output
+          this.incomeTaxOutputInfo = response;
 
-          this.incomeTaxCalculationForm.stopLoading();
+          this.grossAnnualSalaryFormControl.enable();
         },
         err => {
-          this.toastrService.error("Error! " + err.message);
-          this.incomeTaxCalculationForm.stopLoading();
+          let apiError: ResponseModel = err.error;
+
+          this.toastrService.error("Error! " + apiError.message);
+          this.grossAnnualSalaryFormControl.enable();
         });
   }
-}
 
-class IncomeTaxCalculationForm {
-  isLoading: boolean = false;
+  createCalculateIncomeTaxRequestModel(grossAnnualSalary: number): CalculateIncomeTaxRequestModel {
+    var requestModel: CalculateIncomeTaxRequestModel =
+    {
+      grossAnnualSalary: grossAnnualSalary
+    }
 
-  form: FormGroup;
-
-  get f() { return this.form.controls; }
-
-  constructor(private formBuilder: FormBuilder) {
-    this.form = this.formBuilder.group({
-      grossAnnualSalary: ['', [Validators.required, Validators.min(1)]]
-    });
+    return requestModel;
   }
-
-  startLoading(): void {
-    this.isLoading = true;
-  } 
-
-  stopLoading(): void {
-    this.isLoading = false;
-    
-    this.form.markAsUntouched();
-  }  
 }

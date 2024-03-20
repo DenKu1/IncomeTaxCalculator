@@ -1,65 +1,42 @@
-<div class="card mb-3">
+<label for="grossAnnualSalaryFormControl">Gross Annual Salary: </label>
+<input id="grossAnnualSalaryFormControl" type="text" [formControl]="grossAnnualSalaryFormControl">
 
-  <!--Calculate income tax form-->
-  <form [formGroup]="incomeTaxCalculationForm.form">
-    <div class="card-body p3d-bg-color-light-accent">
-
-      <div class="row">
-        <div class="col-sm-3">
-          <h6 class="mb-0">Gross Annual Salary: </h6>
-        </div>
-
-        <!--Update creator form: companyName-->
-        <input [disabled]="incomeTaxCalculationForm.form.disabled || incomeTaxCalculationForm.isLoading" type="text" class="col-sm-9 text-secondary" formControlName="grossAnnualSalary">
-        <span *ngIf="incomeTaxCalculationForm.f.grossAnnualSalary.errors" class="text-danger">
-          <span *ngIf="incomeTaxCalculationForm.f.grossAnnualSalary.errors.required">Gross annual salary value is required</span>
-          <span *ngIf="incomeTaxCalculationForm.f.grossAnnualSalary.errors.min">Gross annual salary value should be more than zero</span>
-        </span>
-
-      </div>
-
-      <div class="col-sm-12">
-        <!--Calculate income tax form: submit-->
-        <button type="button" [disabled]="incomeTaxCalculationForm.form.invalid || !incomeTaxCalculationForm.form.touched || incomeTaxCalculationForm.isLoading" class="p3d-button float-end"
-                (click)="calculateIncomeTax()">
-          <span *ngIf="incomeTaxCalculationForm.isLoading" class="spinner-border spinner-border-sm mr-1"></span>
-          Calculate
-        </button>
-      </div>
-
-    </div>
-  </form>
-
-  <hr>
-
-  <!-- Calculation results -->
-  <div class="card mt-3">
-    <ul class="list-group list-group-flush color-card">
-      <li class="list-group-item d-flex justify-content-between align-items-center p3d-bg-color-light-accent">
-        <span>Gross Annual Salary:</span>
-        <span class="text-secondary">{{incomeTaxOutputInfo?.grossAnnualSalary || ''}}</span>
-      </li>
-      <li class="list-group-item d-flex justify-content-between align-items-center p3d-bg-color-light-accent">
-        <span>Gross Monthly Salary:</span>
-        <span class="text-secondary">{{incomeTaxOutputInfo?.grossMonthlySalary || ''}}</span>
-      </li>
-      <li class="list-group-item d-flex justify-content-between align-items-center p3d-bg-color-light-accent">
-        <span>Net Annual Salary:</span>
-        <span class="text-secondary">{{incomeTaxOutputInfo?.netAnnualSalary || ''}}</span>
-      </li>
-      <li class="list-group-item d-flex justify-content-between align-items-center p3d-bg-color-light-accent">
-        <span>Net Monthly Salary:</span>
-        <span class="text-secondary">{{incomeTaxOutputInfo?.netMonthlySalary || ''}}</span>
-      </li>
-      <li class="list-group-item d-flex justify-content-between align-items-center p3d-bg-color-light-accent">
-        <span>Annual Tax Paid:</span>
-        <span class="text-secondary">{{incomeTaxOutputInfo?.annualTaxPaid || ''}}</span>
-      </li>
-      <li class="list-group-item d-flex justify-content-between align-items-center p3d-bg-color-light-accent">
-        <span>Monthly Tax Paid: </span>
-        <span class="text-secondary">{{incomeTaxOutputInfo?.monthlyTaxPaid || ''}}</span>
-      </li>
-    </ul>
+<div *ngIf="grossAnnualSalaryFormControl.invalid && (grossAnnualSalaryFormControl.dirty || grossAnnualSalaryFormControl.touched)"
+     class="alert alert-danger">
+  <div *ngIf="grossAnnualSalaryFormControl.errors.required">
+    Gross annual salary value is required
   </div>
+  <div *ngIf="grossAnnualSalaryFormControl.errors.min">
+    Gross annual salary value should be more than zero
+  </div>
+</div>
+
+<button [disabled]="grossAnnualSalaryFormControl.invalid || grossAnnualSalaryFormControl.disabled"
+        type="button"
+        (click)="calculateIncomeTax()">Calc</button>
+<div *ngIf="grossAnnualSalaryFormControl.disabled">Loading</div>
+
+<div *ngIf="incomeTaxOutputInfo">
+
+  <ul class="">
+    <li class="">
+      <span>Gross Annual Salary: {{incomeTaxOutputInfo.grossAnnualSalary}} £</span>
+    </li>
+    <li class="">
+      <span>Gross Monthly Salary: {{incomeTaxOutputInfo.grossMonthlySalary}} £</span>
+    </li>
+    <li class="">
+      <span>Net Annual Salary: {{incomeTaxOutputInfo.netAnnualSalary}} £</span>
+    </li>
+    <li class="">
+      <span>Net Monthly Salary: {{incomeTaxOutputInfo.netMonthlySalary}} £</span>
+    </li>
+    <li class="">
+      <span>Annual Tax Paid: {{incomeTaxOutputInfo.annualTaxPaid}} £</span>
+    </li>
+    <li class="">
+      <span>Monthly Tax Paid: {{incomeTaxOutputInfo.monthlyTaxPaid}} £</span>
+    </li>
+  </ul>
 
 </div>
